@@ -1,0 +1,17 @@
+# Tested Windows / CPython 3.9 software stack
+numpy==1.21.5
+pandas==1.4.2
+matplotlib==3.5.1
+fabio==2022.12.1
+pyFAI==0.20.0
+pygix==2022.11.14
+scipy==1.7.3
+numexpr==2.8.1
+silx==1.1.2
+Gooey==1.0.8.1
+wxPython==4.2.1
+Pillow==9.0.1
+psutil==5.8.0
+colored==2.2.3
+pygtrie==2.5.0
+six==1.16.0
