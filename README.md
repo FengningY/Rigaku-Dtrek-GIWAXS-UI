@@ -2,6 +2,8 @@
 
 A small desktop application for processing individual Rigaku d*TREK `.img` GIWAXS frames. It is derived from the geometry and image-orientation workflow in `Rigaku Dtrek image conversion - Fengning_20241108.ipynb`.
 
+Project updates: <https://github.com/FengningY/Rigaku-Dtrek-GIWAXS-UI>
+
 The application deliberately has two operations only:
 
 - **2D reciprocal-space reshape**: produces `I(Qxy, Qz)`.

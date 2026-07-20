@@ -19,7 +19,7 @@ from rigaku_dtrek_processing import (
     save_line_cut,
 )
 
-PROJECT_URL = "https://github.com/FengningY"
+PROJECT_URL = "https://github.com/FengningY/Rigaku-Dtrek-GIWAXS-UI"
 
 try:
     from gooey import Gooey, GooeyParser
