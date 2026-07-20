@@ -45,6 +45,8 @@ Validate the geometry on a known reference image before analysing an entire expe
 
 Each figure is exported as PNG, PDF, and SVG. Reshape data are also saved as NPZ, while line cuts are saved as CSV.
 
+Each result also has a matching `_config.json` file. It records the input image, header-derived incident angle, 2Theta, detector distance, beam centre, and wavelength, together with the pixel size, sample orientation, and analysis settings used to generate that result.
+
 ## Data Policy
 
 Raw `.img` files and generated results are excluded by `.gitignore`. Do not commit experimental data or in-house geometry information to a public repository without appropriate permission.

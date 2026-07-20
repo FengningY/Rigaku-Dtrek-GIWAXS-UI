@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import matplotlib
@@ -60,6 +61,30 @@ def processor_from_args(args: argparse.Namespace):
     return create_processor(args.image_file, RigakuGeometry())
 
 
+def save_config(
+    stem: Path,
+    args: argparse.Namespace,
+    processor,
+    analysis_settings: dict[str, object],
+) -> Path:
+    """Write geometry and analysis settings next to each result."""
+    config = {
+        "input_image": str(Path(args.image_file).resolve()),
+        "analysis": args.action,
+        "geometry_from_dtrek_header": processor.metadata,
+        "processing": {
+            "pixel_size_m": processor.geometry.pixel_size_m,
+            "sample_orientation": processor.geometry.sample_orientation,
+            "polarization_factor": processor.geometry.polarization_factor,
+            "image_rotation_degrees": 180,
+        },
+        "analysis_settings": analysis_settings,
+    }
+    config_path = stem.with_name(f"{stem.name}_config.json")
+    config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
+    return config_path
+
+
 def run_reshape(args: argparse.Namespace, output_dir: Path) -> None:
     processor = processor_from_args(args)
     print(f"d*TREK geometry read from header: {processor.metadata}")
@@ -78,7 +103,23 @@ def run_reshape(args: argparse.Namespace, output_dir: Path) -> None:
         vmax=args.display_vmax,
     )
     save_figure(figure, stem, dpi=300)
-    print(f"Saved q-space figure as PNG, PDF and SVG: {stem}\nSaved numerical NPZ: {stem.with_suffix('.npz')}")
+    config_path = save_config(
+        stem,
+        args,
+        processor,
+        {
+            "reshape_bins": args.reshape_bins,
+            "qxy_range_A-1": list(qxy_range),
+            "qz_range_A-1": list(qz_range),
+            "display_vmin": args.display_vmin,
+            "display_vmax": args.display_vmax,
+        },
+    )
+    print(
+        f"Saved q-space figure as PNG, PDF and SVG: {stem}\n"
+        f"Saved numerical NPZ: {stem.with_suffix('.npz')}\n"
+        f"Saved analysis config: {config_path}"
+    )
     plt.show()
 
 
@@ -94,7 +135,22 @@ def run_line_cut(args: argparse.Namespace, output_dir: Path) -> None:
     axis.plot(q, intensity, linewidth=1)
     axis.set(xlabel="$Q$ [Å⁻¹]", ylabel="Intensity", title="Rigaku GIWAXS sector line cut")
     save_figure(figure, stem, dpi=300)
-    print(f"Saved line-cut CSV: {stem.with_suffix('.csv')}\nSaved figure as PNG, PDF and SVG: {stem}")
+    config_path = save_config(
+        stem,
+        args,
+        processor,
+        {
+            "q_range_A-1": [args.q_min, args.q_max],
+            "chi_center_degrees": args.chi_center,
+            "chi_width_degrees": args.chi_width,
+            "line_cut_bins": args.line_cut_bins,
+        },
+    )
+    print(
+        f"Saved line-cut CSV: {stem.with_suffix('.csv')}\n"
+        f"Saved figure as PNG, PDF and SVG: {stem}\n"
+        f"Saved analysis config: {config_path}"
+    )
     plt.show()
 
 
