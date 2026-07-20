@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 import numpy as np
 import pandas as pd
 
@@ -216,17 +217,34 @@ def plot_reshape(
     limits: tuple[float, float, float, float],
     vmin: float | None = None,
     vmax: float | None = None,
+    scale: str = "linear",
 ):
     """Create a standard reciprocal-space figure."""
     fig, ax = plt.subplots(figsize=(8, 5))
+    image_kwargs: dict[str, object] = {}
+    if scale == "logarithmic":
+        positive_intensity = intensity[np.isfinite(intensity) & (intensity > 0)]
+        if positive_intensity.size == 0:
+            raise ValueError("Logarithmic display requires at least one positive intensity value.")
+        log_vmin = float(positive_intensity.min()) if vmin is None else vmin
+        log_vmax = float(positive_intensity.max()) if vmax is None else vmax
+        if log_vmin <= 0:
+            raise ValueError("The logarithmic display minimum must be greater than zero.")
+        if log_vmax <= log_vmin:
+            raise ValueError("The display maximum must be greater than the display minimum.")
+        image_kwargs["norm"] = LogNorm(vmin=log_vmin, vmax=log_vmax)
+        intensity = np.ma.masked_less_equal(intensity, 0)
+    elif scale == "linear":
+        image_kwargs.update(vmin=vmin, vmax=vmax)
+    else:
+        raise ValueError(f"Unsupported display scale: {scale}")
     image = ax.imshow(
         intensity,
         cmap=CMAP,
         extent=(qxy.min(), qxy.max(), qz.min(), qz.max()),
-        vmin=vmin,
-        vmax=vmax,
         aspect=1,
         origin="lower",
+        **image_kwargs,
     )
     ax.set(xlabel="$Q_{xy}$ [Å⁻¹]", ylabel="$Q_z$ [Å⁻¹]")
     ax.set_xlim(limits[0], limits[1])

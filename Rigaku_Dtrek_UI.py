@@ -49,6 +49,12 @@ def build_parser() -> argparse.ArgumentParser:
     analysis.add_argument("--qz-max", type=float, default=5.0, help="Qz upper limit (Å^-1).")
     analysis.add_argument("--display-vmin", type=float, default=None, help="Optional fixed colour-scale minimum.")
     analysis.add_argument("--display-vmax", type=float, default=None, help="Optional fixed colour-scale maximum.")
+    analysis.add_argument(
+        "--display-scale",
+        choices=("linear", "logarithmic"),
+        default="linear",
+        help="Colour scale for the 2D reshape. Use logarithmic to reveal weak scattering features.",
+    )
     analysis.add_argument("--q-min", type=float, default=0.01, help="Line-cut q lower limit (Å^-1).")
     analysis.add_argument("--q-max", type=float, default=2.5, help="Line-cut q upper limit (Å^-1).")
     analysis.add_argument("--chi-center", type=float, default=0.0, help="Line-cut chi sector centre (degrees).")
@@ -101,6 +107,7 @@ def run_reshape(args: argparse.Namespace, output_dir: Path) -> None:
         limits=(*qxy_range, *qz_range),
         vmin=args.display_vmin,
         vmax=args.display_vmax,
+        scale=args.display_scale,
     )
     save_figure(figure, stem, dpi=300)
     config_path = save_config(
@@ -113,6 +120,7 @@ def run_reshape(args: argparse.Namespace, output_dir: Path) -> None:
             "qz_range_A-1": list(qz_range),
             "display_vmin": args.display_vmin,
             "display_vmax": args.display_vmax,
+            "display_scale": args.display_scale,
         },
     )
     print(

@@ -42,6 +42,7 @@ Validate the geometry on a known reference image before analysing an entire expe
 2. The application reports the geometry read from the d*TREK header in the output console.
 3. Choose `2D reciprocal-space reshape` to inspect `Qxy/Qz` geometry or `1D sector line cut` to integrate a selected chi sector.
 4. For a first-quadrant region (`Qxy > 0`, `Qz > 0`), a common initial line-cut sector is `chi centre = 45` and `chi width = 90`, covering 0–90 degrees. Confirm this on the reshape map before interpreting it.
+5. Choose `logarithmic` display scale for a weak diffraction signal. Non-positive intensity values are hidden in this view; use `linear` when absolute intensity contrast is more important.
 
 Each figure is exported as PNG, PDF, and SVG. Reshape data are also saved as NPZ, while line cuts are saved as CSV.
 
