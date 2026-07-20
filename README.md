@@ -55,6 +55,22 @@ Check that the essential packages can be imported:
 python -c "import numpy, fabio, pyFAI, pygix; print('Environment is ready.')"
 ```
 
+### Installation without Git or Conda
+
+Git and Conda are optional. Download the repository ZIP from <https://github.com/FengningY/Rigaku-Dtrek-GIWAXS-UI>, extract it to a permanent local folder, and install 64-bit Python 3.9 from <https://www.python.org/downloads/>. Select **Add Python to PATH** during the Python installation.
+
+Open PowerShell in the extracted project folder and create a local Python environment:
+
+```powershell
+cd "C:\path\to\Rigaku-Dtrek-GIWAXS-UI"
+py -3.9 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe Rigaku_Dtrek_UI.py
+```
+
+The `.venv` folder keeps all required packages inside this project folder. If `py` is unavailable, replace `py -3.9` with `python` after confirming that `python --version` reports Python 3.9.
+
 ## Starting the application
 
 Activate the environment every time before launching the program:
@@ -69,7 +85,7 @@ The Gooey desktop window will open. Select an analysis operation from the first 
 
 ## Desktop one-click launcher
 
-After the one-time installation, use `Launch_Rigaku_Dtrek_GIWAXS_UI.bat` to open the UI without manually activating Conda. The launcher searches common Miniconda, Anaconda, and Miniforge installation folders, then starts the `rigaku-giwaxs` environment created in the installation section.
+After the one-time installation, use `Launch_Rigaku_Dtrek_GIWAXS_UI.bat` to open the UI without manually activating Conda. The launcher first uses the local `.venv` environment, if present. Otherwise, it searches common Miniconda, Anaconda, and Miniforge installation folders and starts the `rigaku-giwaxs` environment created in the installation section.
 
 To create a desktop icon in Windows:
 
