@@ -24,14 +24,13 @@ python Rigaku_Dtrek_UI.py
 
 ## Geometry Defaults
 
-The UI reads omega, wavelength, 2Theta, detector dimensions, and beam-y from the selected d*TREK header. The source notebook established the following defaults for the in-house configuration:
+The UI reads omega, wavelength, 2Theta, detector dimensions, beam centre, and detector distance from the selected d*TREK header. The source notebook established the following behaviour for the in-house configuration:
 
 | Setting | Default | Notes |
 | --- | ---: | --- |
 | Pixel size | 100 µm | Fixed in the processing code. |
-| Detector distance | 0.065 m | Can be overridden in the UI. |
-| Beam centre x | 395.586 pixels | Can be overridden in the UI. |
-| Beam centre y | d*TREK header | Can be overridden in the UI if required. |
+| Detector distance | d*TREK header `Distance` | Falls back to 0.065 m only when the header does not provide a usable value. |
+| Beam centre x/y | d*TREK header `PXD_SPATIAL_BEAM_POSITION` | No user input required. |
 | Image orientation | 180 degree rotation | Applied automatically, matching the notebook. |
 | Sample orientation | 3 | Fixed to the original GIWAXS mapping. |
 
@@ -40,7 +39,7 @@ Validate the geometry on a known reference image before analysing an entire expe
 ## Using the UI
 
 1. Select a d*TREK `.img` file and an output directory.
-2. Check or override detector distance and beam centre x if the experiment geometry differs from the defaults.
+2. The application reports the geometry read from the d*TREK header in the output console.
 3. Choose `2D reciprocal-space reshape` to inspect `Qxy/Qz` geometry or `1D sector line cut` to integrate a selected chi sector.
 4. For a first-quadrant region (`Qxy > 0`, `Qz > 0`), a common initial line-cut sector is `chi centre = 45` and `chi width = 90`, covering 0–90 degrees. Confirm this on the reshape map before interpreting it.
 

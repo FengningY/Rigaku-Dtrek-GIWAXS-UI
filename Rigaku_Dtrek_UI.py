@@ -40,12 +40,7 @@ def build_parser() -> argparse.ArgumentParser:
     files.add_argument("--image-file", required=True, **chooser("FileChooser"), help="Rigaku d*TREK .img image file.")
     files.add_argument("--output-dir", required=True, **chooser("DirChooser"), help="Directory for figures and CSV/NPZ data.")
 
-    geometry = parser.add_argument_group("2. Rigaku geometry")
-    geometry.add_argument("--distance-m", type=float, default=0.065, help="Sample-to-detector distance in metres.")
-    geometry.add_argument("--beam-center-x-px", type=float, default=395.586, help="Beam centre x coordinate in pixels.")
-    geometry.add_argument("--beam-center-y-px", type=float, default=None, help="Optional beam centre y override; blank uses the d*TREK header.")
-
-    analysis = parser.add_argument_group("3. Analysis settings")
+    analysis = parser.add_argument_group("2. Analysis settings")
     analysis.add_argument("--reshape-bins", type=int, default=600, help="Number of q-space bins in each direction.")
     analysis.add_argument("--qxy-min", type=float, default=-2.5, help="Qxy lower limit (Å^-1).")
     analysis.add_argument("--qxy-max", type=float, default=2.5, help="Qxy upper limit (Å^-1).")
@@ -62,16 +57,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def processor_from_args(args: argparse.Namespace):
-    geometry = RigakuGeometry(
-        distance_m=args.distance_m,
-        beam_center_x_px=args.beam_center_x_px,
-        beam_center_y_px=args.beam_center_y_px,
-    )
-    return create_processor(args.image_file, geometry)
+    return create_processor(args.image_file, RigakuGeometry())
 
 
 def run_reshape(args: argparse.Namespace, output_dir: Path) -> None:
     processor = processor_from_args(args)
+    print(f"d*TREK geometry read from header: {processor.metadata}")
     qxy_range = (args.qxy_min, args.qxy_max)
     qz_range = (args.qz_min, args.qz_max)
     intensity, qxy, qz = processor.reshape(args.reshape_bins, qxy_range, qz_range)
@@ -93,6 +84,7 @@ def run_reshape(args: argparse.Namespace, output_dir: Path) -> None:
 
 def run_line_cut(args: argparse.Namespace, output_dir: Path) -> None:
     processor = processor_from_args(args)
+    print(f"d*TREK geometry read from header: {processor.metadata}")
     q, intensity = processor.line_cut(
         (args.q_min, args.q_max), args.chi_center, args.chi_width, args.line_cut_bins
     )

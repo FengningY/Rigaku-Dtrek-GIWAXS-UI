@@ -29,8 +29,8 @@ CMAP.set_bad(CMAP(0))
 class RigakuGeometry:
     """Geometry values used to build a pyFAI integrator from a d*TREK header."""
 
-    distance_m: float = 0.065
-    beam_center_x_px: float = 395.586
+    distance_m: float | None = None
+    beam_center_x_px: float | None = None
     beam_center_y_px: float | None = None
     pixel_size_m: float = 100e-6
     sample_orientation: int = 3
@@ -72,16 +72,15 @@ class RigakuProcessor:
     def __init__(self, image: np.ndarray, header: dict, geometry: RigakuGeometry):
         try:
             import pyFAI
-            from pyFAI.azimuthalIntegrator import AzimuthalIntegrator
             import sys
             import types
 
             # pygix imports pyFAI.opencl at startup. Disable this optional path
             # because it aborts in the tested legacy Windows software stack.
-            if "pyFAI.opencl" not in sys.modules:
-                opencl_disabled = types.ModuleType("pyFAI.opencl")
-                opencl_disabled.ocl = None
-                sys.modules["pyFAI.opencl"] = opencl_disabled
+            opencl_disabled = types.ModuleType("pyFAI.opencl")
+            opencl_disabled.ocl = None
+            sys.modules["pyFAI.opencl"] = opencl_disabled
+            from pyFAI.azimuthalIntegrator import AzimuthalIntegrator
             import pygix
         except ImportError as error:
             raise ImportError("Install pyFAI and pygix before processing Rigaku images.") from error
@@ -100,9 +99,16 @@ class RigakuProcessor:
         if "2Theta" not in gonio_names:
             raise ValueError("The d*TREK header does not contain a 2Theta value in PXD_GONIO_NAMES.")
         two_theta = gonio_values[gonio_names.index("2Theta")]
+        distance = geometry.distance_m
+        if distance is None and "Distance" in gonio_names:
+            raw_distance = gonio_values[gonio_names.index("Distance")]
+            distance = raw_distance / 1000.0 if 1 < raw_distance < 2000 else raw_distance
+        if distance is None:
+            distance = 0.065
 
         # The original notebook uses this header ordering after a 180 degree rotation.
         shape_x, shape_y = (int(dimensions[0]), int(dimensions[1]))
+        beam_x = geometry.beam_center_x_px if geometry.beam_center_x_px is not None else beam_position[0]
         beam_y = geometry.beam_center_y_px if geometry.beam_center_y_px is not None else beam_position[1]
         detector = pyFAI.detectors.Detector(
             geometry.pixel_size_m,
@@ -111,16 +117,24 @@ class RigakuProcessor:
         )
         self.ai = AzimuthalIntegrator(
             poni1=(shape_y - beam_y) * geometry.pixel_size_m,
-            poni2=(shape_x - geometry.beam_center_x_px) * geometry.pixel_size_m,
+            poni2=(shape_x - beam_x) * geometry.pixel_size_m,
             detector=detector,
             rot2=np.deg2rad(two_theta),
             wavelength=wavelength_values[1] * 1e-10,
-            dist=geometry.distance_m,
+            dist=distance,
         )
         self.pg = pygix.Transform()
         self.pg.load(self.ai)
         self.pg.incident_angle = omega
         self.pg.sample_orientation = geometry.sample_orientation
+        self.metadata = {
+            "incident_angle_degrees": omega,
+            "two_theta_degrees": two_theta,
+            "distance_m": distance,
+            "beam_center_x_px": beam_x,
+            "beam_center_y_px": beam_y,
+            "wavelength_angstrom": wavelength_values[1],
+        }
 
     @staticmethod
     def _install_bbox_compatibility() -> None:
