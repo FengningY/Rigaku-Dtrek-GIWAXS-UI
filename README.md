@@ -20,6 +20,7 @@ Project updates and source code: <https://github.com/FengningY/Rigaku-Dtrek-GIWA
 7. [Output files and configuration record](#output-files-and-configuration-record)
 8. [Recommended workflow](#recommended-workflow)
 9. [Troubleshooting](#troubleshooting)
+10. [Desktop one-click launcher](#desktop-one-click-launcher)
 
 ## Requirements
 
@@ -65,6 +66,19 @@ python Rigaku_Dtrek_UI.py
 ```
 
 The Gooey desktop window will open. Select an analysis operation from the first control, then complete the input and analysis settings. The console output reports the geometry read from the selected image header and lists every saved output path.
+
+## Desktop one-click launcher
+
+After the one-time installation, use `Launch_Rigaku_Dtrek_GIWAXS_UI.bat` to open the UI without manually activating Conda. The launcher searches common Miniconda, Anaconda, and Miniforge installation folders, then starts the `rigaku-giwaxs` environment created in the installation section.
+
+To create a desktop icon in Windows:
+
+1. Open this project folder in File Explorer.
+2. Right-click `Launch_Rigaku_Dtrek_GIWAXS_UI.bat`.
+3. Select **Show more options** if necessary, then select **Send to > Desktop (create shortcut)**.
+4. Double-click the desktop shortcut to open the UI.
+
+Optionally, right-click the shortcut, select **Properties**, and change **Run** to **Minimized**. If the project folder is moved or renamed, create a new shortcut because the old one points to its previous location.
 
 ## Input image and automatic geometry
 
