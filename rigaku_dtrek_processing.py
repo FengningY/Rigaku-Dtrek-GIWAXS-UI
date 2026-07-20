@@ -72,6 +72,7 @@ class RigakuProcessor:
     def __init__(self, image: np.ndarray, header: dict, geometry: RigakuGeometry):
         try:
             import pyFAI
+            from pyFAI.azimuthalIntegrator import AzimuthalIntegrator
             import sys
             import types
 
@@ -108,7 +109,7 @@ class RigakuProcessor:
             geometry.pixel_size_m,
             max_shape=(shape_x, shape_y),
         )
-        self.ai = pyFAI.azimuthalIntegrator.AzimuthalIntegrator(
+        self.ai = AzimuthalIntegrator(
             poni1=(shape_y - beam_y) * geometry.pixel_size_m,
             poni2=(shape_x - geometry.beam_center_x_px) * geometry.pixel_size_m,
             detector=detector,
