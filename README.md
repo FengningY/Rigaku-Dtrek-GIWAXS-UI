@@ -187,13 +187,6 @@ Keep the config JSON together with any figure used in a report or publication so
 
 ## Troubleshooting
 
-### The command cannot change to a directory with spaces
-
-Quote the full path:
-
-```powershell
-cd "C:\Users\name\OneDrive\Documents\Daily plan"
-```
 
 ### The GUI does not open or a package import fails
 
