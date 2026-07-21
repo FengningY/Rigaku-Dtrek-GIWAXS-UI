@@ -1,0 +1,10 @@
+# Tested on Windows x86-64 with CPython 3.12.13 (July 2026)
+numpy==2.5.1
+scipy==1.18.0
+pandas==3.0.3
+matplotlib==3.11.1
+h5py==3.16.0
+hdf5plugin==7.0.0
+Pillow==12.3.0
+fabio==2024.9.0
+pyFAI==2026.5.0

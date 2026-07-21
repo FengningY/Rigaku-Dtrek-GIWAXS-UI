@@ -9,6 +9,10 @@ The geometry and image-orientation workflow follows `Rigaku Dtrek image conversi
 
 Project updates and source code: <https://github.com/FengningY/Rigaku-Dtrek-GIWAXS-UI>
 
+## Modern Python 3.12+ Version
+
+For new installations, use [modern_py312](modern_py312). This maintained edition uses current pyFAI and FabIO packages with a built-in Tkinter UI. The legacy Python 3.9/Gooey/pygix workflow remains available in the parent folder for reproducibility.
+
 ## Contents
 
 1. [Requirements](#requirements)
